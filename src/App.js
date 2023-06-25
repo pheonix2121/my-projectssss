@@ -1,25 +1,37 @@
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
 import './App.css';
+import NewExpense from './Components/NewExpense';
+import ExpenseList from './Components/ExpenseList';
 
-function App() {
+const App = () => {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const storedProducts = JSON.parse(localStorage.getItem('products'));
+
+    if (storedProducts && storedProducts.length > 0) {
+      setProducts(storedProducts);
+    }
+  }, []);
+
+  const addProductHandler = (product) => {
+    const updatedProducts = [product, ...products];
+    setProducts(updatedProducts);
+    localStorage.setItem('products', JSON.stringify(updatedProducts));
+  };
+
+  const deleteProductHandler = (expenseId) => {
+    const updatedProducts = products.filter((product) => product.id !== expenseId);
+    setProducts(updatedProducts);
+    localStorage.setItem('products', JSON.stringify(updatedProducts));
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <NewExpense onAddProduct={addProductHandler} />
+      <ExpenseList products={products} onDeleteProduct={deleteProductHandler} />
     </div>
   );
-}
+};
 
 export default App;
